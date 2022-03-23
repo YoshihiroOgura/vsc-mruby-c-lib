@@ -40,7 +40,7 @@ function search_extension_files(folder_path:string, extension:string){
 
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {
-		const writeConfig = vscode.workspace.getConfiguration('mrubycWrite');
+		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		const activeEditor = vscode.window.activeTextEditor;
 
 		if (activeEditor) {
@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.build', () => {
-		const mrbcConfig = vscode.workspace.getConfiguration('mrbc');
+		const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			const d_uri = activeEditor.document.uri.fsPath;
@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.all_build', () => {
-		const mrbcConfig = vscode.workspace.getConfiguration('mrbc');
+		const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			const f_uri = activeEditor.document.uri.fsPath;
@@ -84,8 +84,8 @@ export function activate(context: vscode.ExtensionContext) {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.build_write', () => {
-		const mrbcConfig = vscode.workspace.getConfiguration('mrbc');
-		const writeConfig = vscode.workspace.getConfiguration('mrubycWrite');
+		const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
+		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		const activeEditor = vscode.window.activeTextEditor;
 		if (activeEditor) {
 			const f_uri = activeEditor.document.uri.fsPath;
