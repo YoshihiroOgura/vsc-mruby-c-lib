@@ -6,7 +6,7 @@
 	"publisher": "Yoshihiro Ogura",
 	"repository": {
 		"type": "git",
-		"url": ""
+		"url": "https://github.com/YoshihiroOgura/vsc-mruby-c-lib"
 	},
 	"engines": {
 		"vscode": "^1.43.0"
