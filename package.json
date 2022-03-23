@@ -49,48 +49,48 @@
 		"commands": [
 			{
 				"command": "extension.write",
-				"title": "Mruby/c:write microcontroller",
+				"title": "%extension.write.title%",
 				"icon": "$(arrow-down)"
 			},
 			{
 				"command": "extension.build",
-				"title": "Mruby/c:build file",
+				"title": "%extension.build.title%",
 				"icon": "$(symbol-constant)"
 			},
 			{
 				"command": "extension.all_build",
-				"title": "Mruby/c:build all file",
+				"title": "%extension.all_build.title%",
 				"icon": "$(symbol-enum)"
 			},
 			{
 				"command": "extension.build_write",
-				"title": "Mruby/c:build and write",
+				"title": "%extension.build_write.title%",
 				"icon": "$(debug-alt)"
 			}
 		],
 		"configuration": {
 			"type": "object",
-			"title": "Mrubyc",
+			"title": "mrubyc writer",
 			"properties": {
-				"mrbc.path": {
+				"mrubyc.mrbc.path": {
 					"type": "string",
 					"default": "",
-					"description": "Path to mruby compiler"
+					"description": "%description.mrbc.path%"
 				},
-				"mrbc.option": {
+				"mrubyc.mrbc.option": {
 					"type": "string",
 					"default": "",
-					"description": "mruby compiler options"
+					"description": "%description.mrbc.option%"
 				},
-				"mrubycWrite.path": {
+				"mrubyc.write.path": {
 					"type": "string",
 					"default": "",
-					"description": "Path to mrubyc write"
+					"description": "%description.mrubycWrite.path%"
 				},
-				"mrubycWrite.option": {
+				"mrubyc.write.option": {
 					"type": "string",
 					"default": "",
-					"description": "mrubyc write options"
+					"description": "%description.mrubycWrite.option%"
 				}
 			}
 		}

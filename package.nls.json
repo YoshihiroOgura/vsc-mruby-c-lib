@@ -1,0 +1,10 @@
+{
+    "extension.write.title": "mruby/c:write microcontroller",
+    "extension.build.title": "mruby/c:build file",
+    "extension.all_build.title": "mruby/c:build all file",
+    "extension.build_write.title": "mruby/c:build and write",
+    "description.mrbc.path": "Path to mruby compiler",
+    "description.mrbc.option": "mruby compiler options",
+    "description.mrubycWrite.path": "Path to mrubyc write",
+    "description.mrubycWrite.option": "mrubyc write options"
+}
