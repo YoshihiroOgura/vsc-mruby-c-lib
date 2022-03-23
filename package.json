@@ -1,0 +1,123 @@
+{
+	"name": "mrubycwrite",
+	"displayName": "mruby/c write",
+	"description": "Compile and write mruby/c.",
+	"version": "0.0.1",
+	"publisher": "Yoshihiro Ogura",
+	"repository": {
+		"type": "git",
+		"url": ""
+	},
+	"engines": {
+		"vscode": "^1.43.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.write",
+		"onCommand:extension.build",
+		"onCommand:extension.all_build",
+		"onCommand:extension.build_write"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"menus": {
+			"editor/title": [
+			  {
+				"when": "editorLangId == ruby",
+				"command": "extension.write",
+				"group": "navigation"
+			  },
+			  {
+				"when": "editorLangId == ruby",
+				"command": "extension.build",
+				"group": "navigation"
+			  },
+			  {
+				"when": "editorLangId == ruby",
+				"command": "extension.all_build",
+				"group": "navigation"
+			  },
+			  {
+				"when": "editorLangId == ruby",
+				"command": "extension.build_write",
+				"group": "navigation"
+			  }
+			]
+		},
+		"commands": [
+			{
+				"command": "extension.write",
+				"title": "Mruby/c:write microcontroller",
+				"icon": "$(arrow-down)"
+			},
+			{
+				"command": "extension.build",
+				"title": "Mruby/c:build file",
+				"icon": "$(symbol-constant)"
+			},
+			{
+				"command": "extension.all_build",
+				"title": "Mruby/c:build all file",
+				"icon": "$(symbol-enum)"
+			},
+			{
+				"command": "extension.build_write",
+				"title": "Mruby/c:build and write",
+				"icon": "$(debug-alt)"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Mrubyc",
+			"properties": {
+				"mrbc.path": {
+					"type": "string",
+					"default": "",
+					"description": "Path to mruby compiler"
+				},
+				"mrbc.option": {
+					"type": "string",
+					"default": "",
+					"description": "mruby compiler options"
+				},
+				"mrubycWrite.path": {
+					"type": "string",
+					"default": "",
+					"description": "Path to mrubyc write"
+				},
+				"mrubycWrite.option": {
+					"type": "string",
+					"default": "",
+					"description": "mrubyc write options"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"lint": "eslint src --ext ts",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.2.0",
+		"@types/mocha": "^7.0.1",
+		"@types/node": "^12.20.47",
+		"@typescript-eslint/eslint-plugin": "^2.34.0",
+		"@typescript-eslint/parser": "^2.34.0",
+		"eslint": "^8.11.0",
+		"glob": "^7.2.0",
+		"mocha": "^9.2.2",
+		"typescript": "^3.9.10",
+		"vsce": "^2.7.0",
+		"vscode-test": "^1.6.1"
+	},
+	"dependencies": {
+		"@types/vscode": "^1.43.0",
+		"encoding-japanese": "^1.0.30"
+	}
+}
