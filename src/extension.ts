@@ -4,6 +4,7 @@ import * as vscode from 'vscode';
 import * as child_process from "child_process";
 import * as fs from "fs";
 import * as path from "path";
+//import * as serial_port from 'serialport';
 
 function get_folder_path(uri:string){
 	var folda_path = "";
@@ -42,6 +43,7 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		const activeEditor = vscode.window.activeTextEditor;
+		const activeTerminal = vscode.window.activeTerminal;
 
 		if (activeEditor) {
 			const f_uri = activeEditor.document.uri.fsPath;
@@ -51,25 +53,35 @@ export function activate(context: vscode.ExtensionContext) {
 			fileList.forEach(function(file_name){
 				command += folder_path + file_name + " ";
 			});
-			puts_command(command);
-			vscode.window.showInformationMessage(command);
+			if(activeTerminal){
+				activeTerminal.sendText(command);
+			}else{
+				puts_command(command);
+				vscode.window.showInformationMessage(command);
+			}
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.build', () => {
 		const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
 		const activeEditor = vscode.window.activeTextEditor;
+		const activeTerminal = vscode.window.activeTerminal;
 		if (activeEditor) {
 			const d_uri = activeEditor.document.uri.fsPath;
 			var command = mrbcConfig.path + ` ` + d_uri + ` ` + mrbcConfig.option;
-			puts_command(command);
-			vscode.window.showInformationMessage(command);
+			if(activeTerminal){
+				activeTerminal.sendText(command);
+			}else{
+				puts_command(command);
+				vscode.window.showInformationMessage(command);
+			}
 		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.all_build', () => {
 		const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
 		const activeEditor = vscode.window.activeTextEditor;
+		const activeTerminal = vscode.window.activeTerminal;
 		if (activeEditor) {
 			const f_uri = activeEditor.document.uri.fsPath;
 			const folder_path = get_folder_path(f_uri);
@@ -77,8 +89,12 @@ export function activate(context: vscode.ExtensionContext) {
 			fileList.forEach(function(file_name){
 				var command = mrbcConfig.path + ` `
 				command += folder_path + file_name + ` ` + mrbcConfig.option;
-				puts_command(command);
-				vscode.window.showInformationMessage(command);
+				if(activeTerminal){
+				  activeTerminal.sendText(command);
+				}else{
+					puts_command(command);
+					vscode.window.showInformationMessage(command);
+				}
 			});
 		}
 	}));
@@ -87,6 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		const activeEditor = vscode.window.activeTextEditor;
+		const activeTerminal = vscode.window.activeTerminal;
 		if (activeEditor) {
 			const f_uri = activeEditor.document.uri.fsPath;
 			const folder_path = get_folder_path(f_uri);
@@ -95,16 +112,24 @@ export function activate(context: vscode.ExtensionContext) {
 			fileList.forEach(function(file_name){
 				command = mrbcConfig.path + ` `
 				command += folder_path + file_name + ` ` + mrbcConfig.option;
-				puts_command(command);
-				vscode.window.showInformationMessage(command);
+				if(activeTerminal){
+					activeTerminal.sendText(command);
+				}else{
+					puts_command(command);
+					vscode.window.showInformationMessage(command);
+				}
 			});
 			command = writeConfig.path + ` ` + writeConfig.option + ` `;
 			fileList = search_extension_files(folder_path,".mrb");
 			fileList.forEach(function(file_name){
 				command += folder_path + file_name + " ";
 			});
-			puts_command(command);
-			vscode.window.showInformationMessage(command);
+			if(activeTerminal){
+				activeTerminal.sendText(command);
+			}else{
+				puts_command(command);
+				vscode.window.showInformationMessage(command);
+			}
 		}
 	}));
 }
