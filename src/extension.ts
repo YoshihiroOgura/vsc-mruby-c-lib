@@ -3,9 +3,11 @@
 import * as vscode from 'vscode';
 import * as fs from "fs";
 import * as path from "path";
-//import * as serial_port from 'serialport';
+var SerialPort = require("serialport");
 const window = vscode.window;
 var terminal:any = null; 
+var sirial_window:any = null;
+var port:any = null; 
 
 function get_folder_path(uri:string){
 	var folda_path = "";
@@ -30,6 +32,18 @@ function puts_command(command:string){
 	terminal.sendText(command);
 }
 
+function output_sirial(){
+	if (sirial_window === null){
+		sirial_window = window.createOutputChannel("mrubyc sirial");
+		sirial_window.appendLine('mruby/c sirial output');
+	}
+}
+
+function puts_log(text:string){
+	sirial_window.show();
+	sirial_window.appendLine(text);
+}
+
 function search_extension_files(folder_path:string, extension:string){
 	var file_list = fs.readdirSync(folder_path);
 	file_list = file_list.filter(function(file){
@@ -39,6 +53,14 @@ function search_extension_files(folder_path:string, extension:string){
 }
 
 export function activate(context: vscode.ExtensionContext) {
+	context.subscriptions.push(vscode.commands.registerCommand('extension.sirial', () => {
+		port = new SerialPort("COM",{ baudRate: 19200 });
+		output_sirial();
+		port.on('open',function() {
+			puts_log('Serial Port ' + port + ' is opened.');
+		});
+	}));
+
 	context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		const activeEditor = window.activeTextEditor;
