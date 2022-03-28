@@ -24,48 +24,48 @@
 	"contributes": {
 		"menus": {
 			"editor/title": [
-			  {
-				"when": "editorLangId == ruby",
-				"command": "extension.write",
-				"group": "navigation"
-			  },
-			  {
-				"when": "editorLangId == ruby",
-				"command": "extension.build",
-				"group": "navigation"
-			  },
-			  {
-				"when": "editorLangId == ruby",
-				"command": "extension.all_build",
-				"group": "navigation"
-			  },
-			  {
-				"when": "editorLangId == ruby",
-				"command": "extension.build_write",
-				"group": "navigation"
-			  }
+				{
+					"when": "editorLangId == ruby",
+					"command": "extension.write",
+					"group": "navigation"
+				},
+				{
+					"when": "editorLangId == ruby",
+					"command": "extension.build",
+					"group": "navigation"
+				},
+				{
+					"when": "editorLangId == ruby",
+					"command": "extension.all_build",
+					"group": "navigation"
+				},
+				{
+					"when": "editorLangId == ruby",
+					"command": "extension.build_write",
+					"group": "navigation"
+				}
 			]
 		},
 		"commands": [
 			{
 				"command": "extension.write",
 				"title": "%extension.write.title%",
-				"icon": "$(arrow-down)"
+				"icon": "$(pencil)"
 			},
 			{
 				"command": "extension.build",
 				"title": "%extension.build.title%",
-				"icon": "$(symbol-constant)"
+				"icon": "$(save)"
 			},
 			{
 				"command": "extension.all_build",
 				"title": "%extension.all_build.title%",
-				"icon": "$(symbol-enum)"
+				"icon": "$(save-all)"
 			},
 			{
 				"command": "extension.build_write",
 				"title": "%extension.build_write.title%",
-				"icon": "$(debug-alt)"
+				"icon": "$(save-as)"
 			}
 		],
 		"configuration": {
@@ -118,6 +118,7 @@
 	},
 	"dependencies": {
 		"@types/vscode": "^1.43.0",
-		"encoding-japanese": "^1.0.30"
+		"encoding-japanese": "^1.0.30",
+		"serialport": "^10.4.0"
 	}
 }
