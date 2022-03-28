@@ -68,7 +68,9 @@ export function activate(context: vscode.ExtensionContext) {
 		if (activeEditor) {
 			const f_uri = activeEditor.document.uri.fsPath;
 			const folder_path = get_folder_path(f_uri);
-			var command = writeConfig.path + ` ` + writeConfig.option + ` `;
+			var command = writeConfig.path + ` `;
+			command += `-l ` + writeConfig.serialport + ` `;
+			command += writeConfig.option + ` `;
 			var fileList = search_extension_files(folder_path,".mrb");
 			fileList.forEach(function(file_name){
 				command += folder_path + file_name + " ";
@@ -116,7 +118,9 @@ export function activate(context: vscode.ExtensionContext) {
 				command += folder_path + file_name + ` ` + mrbcConfig.option;
 				puts_command(command);
 			});
-			command = writeConfig.path + ` ` + writeConfig.option + ` `;
+			command = writeConfig.path + ` `;
+			command += `-l ` + writeConfig.serialport + ` `;
+			command += writeConfig.option + ` `;
 			fileList = search_extension_files(folder_path,".mrb");
 			fileList.forEach(function(file_name){
 				command += folder_path + file_name + " ";

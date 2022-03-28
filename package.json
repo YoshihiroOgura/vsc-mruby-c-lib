@@ -91,6 +91,11 @@
 					"type": "string",
 					"default": "",
 					"description": "%description.mrubycWrite.option%"
+				},
+				"mrubyc.write.serialport": {
+					"type": "string",
+					"default": "",
+					"description": "%description.mrubycWrite.serialport%"
 				}
 			}
 		}
