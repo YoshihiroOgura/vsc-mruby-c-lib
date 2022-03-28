@@ -9,8 +9,8 @@ var terminal:any = null;
 
 function get_folder_path(uri:string){
 	var folda_path = "";
-	var slash = uri.lastIndexOf("/");
-	var back_slash = uri.lastIndexOf("\\");
+	const slash = uri.lastIndexOf("/");
+	const back_slash = uri.lastIndexOf("\\");
 	if(slash > back_slash){
 		folda_path = uri.substring(0, slash+1);
 	}else if(slash < back_slash){
