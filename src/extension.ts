@@ -64,18 +64,15 @@ function tryFlush() {
 		buffer = [];
 	}
 }
-
-export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
-		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
-		output_sirial();
+function portOpen(port_path:string){
+	if (port === null){
 		new Promise<void>((resolve, reject) => {
 			port = new SerialPort.SerialPort({
-				path: writeConfig.serialport,
+				path: port_path,
 				baudRate: 19200}
 			);
 			port.on('open',function() {
-				puts_log('Serial Port '+writeConfig.serialport+' is opened.');
+				puts_log('Serial Port '+port_path+' is opened.');
 			});
 			port.pipe(new ReadlineParser({ delimiter: '\n' }))
 			port.on("data", (data:string) => {
@@ -83,11 +80,21 @@ export function activate(context: vscode.ExtensionContext) {
 				tryFlush();
 			});
 		});
+	};
+}
+
+export function activate(context: vscode.ExtensionContext) {
+	context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
+		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
+		output_sirial();
+		portOpen(writeConfig.serialport);
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.consolewrite', () => {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		const activeEditor = window.activeTextEditor;
+		output_sirial();
+		portOpen(writeConfig.serialport);
 
 		if (activeEditor) {
 			const f_uri = activeEditor.document.uri.fsPath;
