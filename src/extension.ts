@@ -39,8 +39,8 @@ function puts_command(command:string){
 
 function output_sirial(){
 	if (sirial_window === null){
-		sirial_window = window.createOutputChannel("mrubyc sirial");
-		sirial_window.appendLine('mruby/c sirial output');
+		sirial_window = window.createOutputChannel("mrubyc serial");
+		sirial_window.appendLine('mruby/c serial output');
 	}
 }
 
