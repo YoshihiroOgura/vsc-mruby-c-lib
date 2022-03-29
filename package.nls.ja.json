@@ -3,6 +3,7 @@
     "extension.build.title": "mruby/c:コンパイル",
     "extension.all_build.title": "mruby/c:すべてのファイルをコンパイル",
     "extension.build_write.title": "mruby/c:すべてのファイルをコンパイル＆書き込み",
+    "extension.serial.title":"mruby/c:シリアルアウトプット",
     "description.mrbc.path": "mrbcの絶対パスを入力してください",
     "description.mrbc.option": "mrbcのオプションを指定できます",
     "description.mrubycWrite.path": "mrbwriteの絶対パスを入力してください",
