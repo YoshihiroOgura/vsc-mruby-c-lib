@@ -52,8 +52,8 @@ function puts_log(text:string){
 function search_extension_files(folder_path:string, extension:string){
 	var file_list = fs.readdirSync(folder_path);
 	file_list = file_list.filter(function(file){
-　　	return path.extname(file).toLowerCase() === extension;
-　　});
+		return path.extname(file).toLowerCase() === extension;
+	});
 	return file_list;
 }
 function tryFlush() {
@@ -83,6 +83,16 @@ export function activate(context: vscode.ExtensionContext) {
 				tryFlush();
 			});
 		});
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.consolewrite', () => {
+		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
+		const activeEditor = window.activeTextEditor;
+
+		if (activeEditor) {
+			const f_uri = activeEditor.document.uri.fsPath;
+			const folder_path = get_folder_path(f_uri);
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {
