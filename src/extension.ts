@@ -3,11 +3,16 @@
 import * as vscode from 'vscode';
 import * as fs from "fs";
 import * as path from "path";
-var SerialPort = require("serialport");
+import * as SerialPort from "serialport";
+import { performance } from "perf_hooks";
+import { ReadlineParser } from '@serialport/parser-readline';
+//var SerialPort = require('serialport');
 const window = vscode.window;
 var terminal:any = null; 
 var sirial_window:any = null;
-var port:any = null; 
+var port:any = null;
+var buffer: string[] = [];
+var lastFlushTime = Number.NEGATIVE_INFINITY;
 
 function get_folder_path(uri:string){
 	var folda_path = "";
@@ -51,13 +56,32 @@ function search_extension_files(folder_path:string, extension:string){
 　　});
 	return file_list;
 }
+function tryFlush() {
+	const currentTime = performance.now();
+	if (buffer.length > 0 && currentTime - lastFlushTime > 100) {
+		sirial_window.append(buffer.join(""));
+		lastFlushTime = currentTime;
+		buffer = [];
+	}
+}
 
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.commands.registerCommand('extension.sirial', () => {
-		port = new SerialPort("COM",{ baudRate: 19200 });
+	context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
+		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		output_sirial();
-		port.on('open',function() {
-			puts_log('Serial Port ' + port + ' is opened.');
+		new Promise<void>((resolve, reject) => {
+			port = new SerialPort.SerialPort({
+				path: writeConfig.serialport,
+				baudRate: 19200}
+			);
+			port.on('open',function() {
+				puts_log('Serial Port '+writeConfig.serialport+' is opened.');
+			});
+			port.pipe(new ReadlineParser({ delimiter: '\n' }))
+			port.on("data", (data:string) => {
+				buffer.push(data);
+				tryFlush();
+			});
 		});
 	}));
 
