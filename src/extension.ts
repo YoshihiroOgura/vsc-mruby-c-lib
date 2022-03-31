@@ -83,6 +83,17 @@ function portOpen(port_path:string){
 	};
 }
 
+function mrb_write(port_path:string,folder_path:string){
+	var fileList = search_extension_files(folder_path,".mrb");
+	fileList.forEach(function(file_name){
+		var file_path = folder_path + file_name;
+		fs.readFile(file_path,(err, data) => {
+			if (err) throw err;
+			console.log(data);
+		});
+	});
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
