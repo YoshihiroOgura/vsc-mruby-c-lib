@@ -80,6 +80,14 @@ function mrb_write(port_path:string,folder_path:string){
 	});
 }
 
+async function sleep(time:number) {
+	return await new Promise<void>((resolve, reject) => {
+			setTimeout(() => {
+					resolve();
+			}, time);
+	});
+}
+
 export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
@@ -160,9 +168,11 @@ export function activate(context: vscode.ExtensionContext) {
 			var command = "";
 			fileList.forEach(function(file_name){
 				command = mrbcConfig.path + ` `
-				command += folder_path + file_name + ` ` + mrbcConfig.option;
+				command += path.join(folder_path ,file_name);
+				command += ` ` + mrbcConfig.option;
 				puts_command(command);
 			});
+			sleep(1000);
 			command = writeConfig.path + ` `;
 			command += `-l ` + writeConfig.serialport + ` `;
 			command += writeConfig.option + ` `;
