@@ -44,7 +44,7 @@ function search_extension_files(folder_path:string, extension:string){
 }
 function tryFlush() {
 	const currentTime = performance.now();
-	if (buffer.length > 0 && currentTime - lastFlushTime > 100) {
+	if (buffer.length > 0 && currentTime - lastFlushTime > 300) {
 		sirial_window.append(buffer.join(""));
 		lastFlushTime = currentTime;
 		buffer = [];
