@@ -68,9 +68,7 @@ async function portOpen(port_path:string){
         if (err) {
           puts_log(err.message);
 					reject(err);
-        } else {
-					puts_log('Serial Port '+port_path+' is opened.');
-				}
+        }
 			});
 			port.pipe(new ReadlineParser({ delimiter: '\n' }))
 			resolve();
@@ -108,6 +106,18 @@ export function activate(context: vscode.ExtensionContext) {
 				buffer.push(data);
 				tryFlush();
 			});
+		}
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('extension.serialclose', () => {
+		if(port.isOpen && set_datap){
+			set_datap = false;
+			port.off("data", (data:string) => {
+				buffer.push(data);
+				tryFlush();
+			});
+			puts_log('Serial Port '+port.path+' is close.');
+			port.close();
 		}
 	}));
 
