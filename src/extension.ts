@@ -10,9 +10,10 @@ import { ReadlineParser } from '@serialport/parser-readline';
 const window = vscode.window;
 var terminal:any = null; 
 var sirial_window:any = null;
-var port:any = null;
+var port:any = SerialPort;
 var buffer: string[] = [];
 var lastFlushTime = Number.NEGATIVE_INFINITY;
+var set_datap = false;
 
 function puts_command(command:string){
 	if (terminal === null) {
@@ -51,8 +52,7 @@ function tryFlush() {
 	}
 }
 async function portOpen(port_path:string){
-	puts_log(port); 
-	if (port === null){
+	if (!port.isOpen){
 		await new Promise<void>((resolve, reject) => {
 			port = new SerialPort.SerialPort({
 				path: port_path,
@@ -60,14 +60,14 @@ async function portOpen(port_path:string){
 				(err) => {
           if (err) {
 						puts_log(err.message); 
-						reject(err); }
+						reject(err);
+					}
         }
 			);
 			port.open((err:Error) => {
         if (err) {
-          puts_log(err.message); 
+          puts_log(err.message);
 					reject(err);
-					port = null;
         } else {
 					puts_log('Serial Port '+port_path+' is opened.');
 				}
@@ -102,7 +102,8 @@ export function activate(context: vscode.ExtensionContext) {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		output_sirial();
 		portOpen(writeConfig.serialport);
-		if(port !== null){
+		if(port.isOpen && !set_datap){
+			set_datap = true;
 			port.on("data", (data:string) => {
 				buffer.push(data);
 				tryFlush();
