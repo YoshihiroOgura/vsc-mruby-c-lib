@@ -50,21 +50,30 @@ function tryFlush() {
 		buffer = [];
 	}
 }
-function portOpen(port_path:string){
+async function portOpen(port_path:string){
+	puts_log(port); 
 	if (port === null){
-		new Promise<void>((resolve, reject) => {
+		await new Promise<void>((resolve, reject) => {
 			port = new SerialPort.SerialPort({
 				path: port_path,
-				baudRate: 19200}
+				baudRate: 19200},
+				(err) => {
+          if (err) {
+						puts_log(err.message); 
+						reject(err); }
+        }
 			);
-			port.on('open',function() {
-				puts_log('Serial Port '+port_path+' is opened.');
+			port.open((err:Error) => {
+        if (err) {
+          puts_log(err.message); 
+					reject(err);
+					port = null;
+        } else {
+					puts_log('Serial Port '+port_path+' is opened.');
+				}
 			});
 			port.pipe(new ReadlineParser({ delimiter: '\n' }))
-			port.on("data", (data:string) => {
-				buffer.push(data);
-				tryFlush();
-			});
+			resolve();
 		});
 	};
 }
@@ -93,6 +102,12 @@ export function activate(context: vscode.ExtensionContext) {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		output_sirial();
 		portOpen(writeConfig.serialport);
+		if(port !== null){
+			port.on("data", (data:string) => {
+				buffer.push(data);
+				tryFlush();
+			});
+		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.consolewrite', () => {
