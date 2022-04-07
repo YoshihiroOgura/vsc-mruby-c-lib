@@ -81,15 +81,33 @@ async function portOpen(port_path:string){
 	};
 }
 
-function mrb_write(port_path:string,folder_path:string){
+async function mrb_write(port_path:string,folder_path:string){
 	var fileList = search_extension_files(folder_path,".mrb");
-	fileList.forEach(function(file_name){
-		var file_path = folder_path + file_name;
-		fs.readFile(file_path,(err, data) => {
-			if (err) throw err;
-			console.log(data);
-		});
-	});
+	var datas:Buffer = new Buffer(0);
+	await Promise.all(
+		fileList.map(async file_name => {
+			var file_path = path.join(folder_path, file_name);
+			datas = fs.readFileSync(file_path);
+			return datas;
+		})
+	);
+	puts_log(datas.toString());
+	await new Promise<void>((resolve, reject) => {
+		for(let i = 1; i < 20; i++){
+			puts_log(".");
+			port.write(".\n")
+			sleep(1000);
+			if(port.read()){
+				break;
+			}
+		}
+		puts_log("write");
+		port.write(`write ${datas.length}\n`);
+		puts_log("datas");
+		port.write(datas);
+		puts_log("execute");
+		port.write("execute\n");
+	})
 }
 
 async function sleep(time:number) {
@@ -121,14 +139,17 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.consolewrite', () => {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
-		const activeEditor = window.activeTextEditor;
-		output_sirial();
-		portOpen(writeConfig.serialport);
-
-		if (activeEditor) {
-			const f_uri = activeEditor.document.uri.fsPath;
-			// const folder_path = get_folder_path(f_uri);
-		}
+		const folders = vscode.workspace.workspaceFolders
+		output_sirial()
+		portOpen(writeConfig.serialport)
+		if(folders === undefined){
+			vscode.window.showInformationMessage(`Too many workspace folders.`);
+		} else if(folders.length === 1){
+			const folder_path = (folders[0]).uri.fsPath;
+			mrb_write(writeConfig.serialport,folder_path);
+		}else{
+			vscode.window.showInformationMessage(`Too many workspace folders.`);
+		};
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {

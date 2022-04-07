@@ -20,6 +20,7 @@
 		"onCommand:extension.all_build",
 		"onCommand:extension.build_write",
 		"onCommand:extension.serial",
+		"onCommand:extension.consolewrite",
 		"onCommand:extension.close"
 	],
 	"main": "./out/extension.js",
@@ -52,6 +53,10 @@
 				},
 				{
 					"command": "extension.serialclose",
+					"group": "navigation"
+				},
+				{
+					"command": "extension.consolewrite",
 					"group": "navigation"
 				}
 			]
@@ -86,6 +91,11 @@
 				"command": "extension.serialclose",
 				"title": "%extension.serialclose.title%",
 				"icon": "$(close)"
+			},
+			{
+				"command": "extension.consolewrite",
+				"title": "%extension.serialclose.title%",
+				"icon": "$(filter)"
 			}
 		],
 		"configuration": {
