@@ -71,6 +71,11 @@ async function portOpen(port_path:string){
         }
 			});
 			port.pipe(new ReadlineParser({ delimiter: '\n' }))
+			set_datap = true;
+			port.on("data", (data:string) => {
+				buffer.push(data);
+				tryFlush();
+			});
 			resolve();
 		});
 	};
@@ -100,13 +105,6 @@ export function activate(context: vscode.ExtensionContext) {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		output_sirial();
 		portOpen(writeConfig.serialport);
-		if(port.isOpen && !set_datap){
-			set_datap = true;
-			port.on("data", (data:string) => {
-				buffer.push(data);
-				tryFlush();
-			});
-		}
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('extension.serialclose', () => {
