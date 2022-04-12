@@ -7,7 +7,7 @@ import * as SerialPort from "serialport";
 import { performance } from "perf_hooks";
 import { ReadlineParser } from '@serialport/parser-readline';
 require('events').EventEmitter.defaultMaxListeners = 30;
-//var SerialPort = require('serialport');
+
 const window = vscode.window;
 var terminal:any = null; 
 var sirial_window:any = null;
@@ -15,7 +15,6 @@ var port:any = SerialPort;
 var buffer: string[] = [];
 var lastFlushTime = Number.NEGATIVE_INFINITY;
 var set_datap = false;
-var writeFlag = false;
 var txt ="";
 
 function puts_command(command:string){
@@ -46,6 +45,7 @@ function search_extension_files(folder_path:string, extension:string){
 	});
 	return file_list;
 }
+
 function tryFlush() {
 	const currentTime = performance.now();
 	txt += buffer.join("");
@@ -60,6 +60,7 @@ function tryFlush() {
 	buffer=[];
 	lastFlushTime = currentTime;
 }
+
 async function portOpen(port_path:string){
 	if (!port.isOpen){
 		await new Promise<void>((resolve, reject) => {
@@ -85,7 +86,6 @@ async function portOpen(port_path:string){
 			set_datap = true;
 			port.on("data", (data:string) => {
 				buffer.push(data);
-				if(data.indexOf('+') != -1){writeFlag = true;};
 				// txt = data;
 				tryFlush();
 			});
@@ -93,16 +93,6 @@ async function portOpen(port_path:string){
 		});
 	};
 }
-
-function func () {
-	return new Promise<void>(resolve=>{
-		setTimeout(() => {
-			puts_log("timeout");
-			resolve();
-		}, 1000);
-	})
-}; 
-
 
 async function mrb_write(port_path:string,folder_path:string){
 	var fileList = search_extension_files(folder_path,".mrb");
@@ -114,7 +104,6 @@ async function mrb_write(port_path:string,folder_path:string){
 			return datas;
 		})
 	);
-	writeFlag = false;
 	port.flush();
 	port.pause();
 	await new Promise<void>(async resolve => {
