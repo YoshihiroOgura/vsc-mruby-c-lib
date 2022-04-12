@@ -16,6 +16,7 @@ var buffer: string[] = [];
 var lastFlushTime = Number.NEGATIVE_INFINITY;
 var set_datap = false;
 var writeFlag = false;
+var txt ="";
 
 function puts_command(command:string){
 	if (terminal === null) {
@@ -47,11 +48,17 @@ function search_extension_files(folder_path:string, extension:string){
 }
 function tryFlush() {
 	const currentTime = performance.now();
-	if (buffer.length > 0 && currentTime - lastFlushTime > 300) {
-		sirial_window.append(buffer.join(""));
-		lastFlushTime = currentTime;
-		buffer = [];
+	txt += buffer.join("");
+	if (txt.length > 0 && currentTime - lastFlushTime > 300) {
+		var cat:number =txt.lastIndexOf(`\n`);
+		if(cat!== -1){
+			//sirial_window.appendLine(txt);
+			sirial_window.append(txt.slice(0,cat));
+			txt = txt.slice(cat - txt.length);
+		}
 	}
+	buffer=[];
+	lastFlushTime = currentTime;
 }
 async function portOpen(port_path:string){
 	if (!port.isOpen){
@@ -74,6 +81,7 @@ async function portOpen(port_path:string){
         }
 			});
 			port.pipe(new ReadlineParser({ delimiter: '\n' }))
+			port.flush();
 			set_datap = true;
 			port.on("data", (data:string) => {
 				buffer.push(data);
