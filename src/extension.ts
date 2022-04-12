@@ -187,7 +187,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}));
 
-	context.subscriptions.push(vscode.commands.registerCommand('extension.consolewrite', () => {
+	context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {
 		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
 		const folders = vscode.workspace.workspaceFolders
 		output_sirial()
@@ -197,26 +197,6 @@ export function activate(context: vscode.ExtensionContext) {
 		} else if(folders.length === 1){
 			const folder_path = (folders[0]).uri.fsPath;
 			mrb_write(writeConfig.serialport,folder_path);
-		}else{
-			vscode.window.showInformationMessage(`Too many workspace folders.`);
-		};
-	}));
-
-	context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {
-		const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
-		const folders = vscode.workspace.workspaceFolders;
-		if(folders === undefined){
-			vscode.window.showInformationMessage(`Too many workspace folders.`);
-		} else if (folders.length === 1) {
-			const folder_path = (folders[0]).uri.fsPath;
-			var command = writeConfig.path + ` `;
-			command += `-l ` + writeConfig.serialport + ` `;
-			command += writeConfig.option + ` `;
-			var fileList = search_extension_files(folder_path,".mrb");
-			fileList.forEach(function(file_name){
-				command += path.join(folder_path, file_name) + " ";
-			});
-			puts_command(command);
 		}else{
 			vscode.window.showInformationMessage(`Too many workspace folders.`);
 		};
@@ -267,15 +247,10 @@ export function activate(context: vscode.ExtensionContext) {
 				command += ` ` + mrbcConfig.option;
 				puts_command(command);
 			});
+			output_sirial()
+			portOpen(writeConfig.serialport)
 			sleep(1000);
-			command = writeConfig.path + ` `;
-			command += `-l ` + writeConfig.serialport + ` `;
-			command += writeConfig.option + ` `;
-			fileList = search_extension_files(folder_path,".mrb");
-			fileList.forEach(function(file_name){
-				command += path.join(folder_path, file_name) + " ";
-			});
-			puts_command(command);
+			mrb_write(writeConfig.serialport,folder_path);
 		}else{
 			vscode.window.showInformationMessage(`Too many workspace folders.`);
 		};

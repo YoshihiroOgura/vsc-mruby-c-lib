@@ -20,7 +20,6 @@
 		"onCommand:extension.all_build",
 		"onCommand:extension.build_write",
 		"onCommand:extension.serial",
-		"onCommand:extension.consolewrite",
 		"onCommand:extension.close"
 	],
 	"main": "./out/extension.js",
@@ -53,10 +52,6 @@
 				},
 				{
 					"command": "extension.serialclose",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.consolewrite",
 					"group": "navigation"
 				}
 			]
@@ -91,11 +86,6 @@
 				"command": "extension.serialclose",
 				"title": "%extension.serialclose.title%",
 				"icon": "$(close)"
-			},
-			{
-				"command": "extension.consolewrite",
-				"title": "%extension.serialclose.title%",
-				"icon": "$(filter)"
 			}
 		],
 		"configuration": {
@@ -111,11 +101,6 @@
 					"type": "string",
 					"default": "",
 					"description": "%description.mrbc.option%"
-				},
-				"mrubyc.write.path": {
-					"type": "string",
-					"default": "",
-					"description": "%description.mrubycWrite.path%"
 				},
 				"mrubyc.write.option": {
 					"type": "string",

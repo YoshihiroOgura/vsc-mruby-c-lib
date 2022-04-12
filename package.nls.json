@@ -7,7 +7,6 @@
     "extension.serialclose.title":"serial output close",
     "description.mrbc.path": "Path to mruby compiler",
     "description.mrbc.option": "mruby compiler options",
-    "description.mrubycWrite.path": "Path to mrubyc write",
     "description.mrubycWrite.option": "mrubyc write options",
     "description.mrubycWrite.serialport": "serial port"
 }

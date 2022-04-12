@@ -7,7 +7,6 @@
     "extension.serialclose.title":"mruby/c:シリアルアウトプットを閉じる",
     "description.mrbc.path": "mrbcの絶対パスを入力してください",
     "description.mrbc.option": "mrbcのオプションを指定できます",
-    "description.mrubycWrite.path": "mrbwriteの絶対パスを入力してください",
     "description.mrubycWrite.option": "mrbwriteのオプションを指定できます",
     "description.mrubycWrite.serialport": "マイコンボードが使用しているシリアルポートを入力してください"
 }
