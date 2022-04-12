@@ -6,6 +6,7 @@ import * as path from "path";
 import * as SerialPort from "serialport";
 import { performance } from "perf_hooks";
 import { ReadlineParser } from '@serialport/parser-readline';
+require('events').EventEmitter.defaultMaxListeners = 30;
 //var SerialPort = require('serialport');
 const window = vscode.window;
 var terminal:any = null; 
@@ -14,6 +15,7 @@ var port:any = SerialPort;
 var buffer: string[] = [];
 var lastFlushTime = Number.NEGATIVE_INFINITY;
 var set_datap = false;
+var writeFlag = false;
 
 function puts_command(command:string){
 	if (terminal === null) {
@@ -55,6 +57,7 @@ async function portOpen(port_path:string){
 	if (!port.isOpen){
 		await new Promise<void>((resolve, reject) => {
 			port = new SerialPort.SerialPort({
+				autoOpen: true,
 				path: port_path,
 				baudRate: 19200},
 				(err) => {
@@ -74,12 +77,24 @@ async function portOpen(port_path:string){
 			set_datap = true;
 			port.on("data", (data:string) => {
 				buffer.push(data);
+				if(data.indexOf('+') != -1){writeFlag = true;};
+				// txt = data;
 				tryFlush();
 			});
 			resolve();
 		});
 	};
 }
+
+function func () {
+	return new Promise<void>(resolve=>{
+		setTimeout(() => {
+			puts_log("timeout");
+			resolve();
+		}, 1000);
+	})
+}; 
+
 
 async function mrb_write(port_path:string,folder_path:string){
 	var fileList = search_extension_files(folder_path,".mrb");
@@ -91,28 +106,55 @@ async function mrb_write(port_path:string,folder_path:string){
 			return datas;
 		})
 	);
-	puts_log(datas.toString());
-	await new Promise<void>((resolve, reject) => {
-		for(let i = 1; i < 20; i++){
-			puts_log(".");
-			port.write(".\n")
-			sleep(1000);
-			if(port.read()){
-				break;
+	writeFlag = false;
+	port.flush();
+	port.pause();
+	await new Promise<void>(async resolve => {
+		for(var i=0;i<15;i++){
+			await new Promise<void>(async resolve => {
+				await port.write("\n");
+				await port.drain()
+				await puts_log(".");
+				await setTimeout(() => {
+					resolve();
+				}, 1000);
+			});
+			var moji = port.read(13);
+			if(moji !== null){
+				if(moji.indexOf('\n') != -1){break;};
+			}else{
+				port.open();
 			}
 		}
-		puts_log("write");
+		await port.flush();
+		puts_log("send write command");
 		port.write(`write ${datas.length}\n`);
-		puts_log("datas");
+		for(var i=0;i<30;i++){
+			await new Promise<void>(async resolve => {
+				setTimeout(resolve, 100);
+			});
+			var moji = port.read(20);
+			if(moji !== null){
+				if(moji.indexOf('+') != -1){
+					await port.flush();
+					puts_log("write datas");
+					break;
+				};
+			}
+		}
 		port.write(datas);
 		puts_log("execute");
 		port.write("execute\n");
+		await port.flush();
+		port.resume();
+		resolve();
 	})
 }
 
 async function sleep(time:number) {
-	return await new Promise<void>((resolve, reject) => {
+	return await new Promise<void>(resolve => {
 			setTimeout(() => {
+				puts_log("timeout");
 					resolve();
 			}, time);
 	});
