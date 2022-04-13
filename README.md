@@ -1,7 +1,7 @@
 # Usage
 Extensions-settings
 
-## Mrbc:Option
+## Mrubyc › Mrbc: Option
 Enter compile options
 
 example:
@@ -9,16 +9,15 @@ example:
 --verbose
 ```
 
-## Mrbc:Path
+## Mrubyc › Mrbc: Path
 Please enter the absolute path of mrbc.exe
 
-## Mrubyc Write:Option
-Enter options for mrbwrite.exe
+## Mrubyc › Write: Option
+unused
 
-example:
-```
--s 19200 -l COM1
-```
+## Mrubyc › Write: Serialport
+Please enter the Serialport path.
 
-## Mrubyc Write:Path
-Please enter the absolute path of mrbwrite.exe
+windows : `COM1`
+
+ubuntu  : `/dev/ttyACM0`
