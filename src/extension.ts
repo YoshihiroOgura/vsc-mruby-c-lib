@@ -49,7 +49,7 @@ function search_extension_files(folder_path:string, extension:string) {
 function tryFlush() {
 	const currentTime = performance.now();
 	txt += buffer.join("");
-	if (txt.length > 0 && currentTime - lastFlushTime > 300) {
+	if (txt.length > 0 && currentTime - lastFlushTime > 100) {
 		var cat:number =txt.lastIndexOf(`\n`);
 		if (cat !== -1) {
 			//sirial_window.appendLine(txt);
@@ -224,19 +224,25 @@ export function activate(context: vscode.ExtensionContext) {
 		if (folders === undefined) {
 			vscode.window.showInformationMessage(`Too many workspace folders.`);
 		} else if (folders.length === 1) {
-			const folder_path = (folders[0]).uri.fsPath;
-			var fileList = search_extension_files(folder_path, ".rb");
-			var command = "";
-			fileList.forEach(function(file_name) {
-				command = mrbcConfig.path + ` `;
-				command += path.join(folder_path ,file_name);
-				command += ` ` + mrbcConfig.option;
-				puts_command(command);
+			new Promise<void>(async resolve => {
+				const folder_path = (folders[0]).uri.fsPath;
+				var fileList = search_extension_files(folder_path, ".rb");
+				var command = "";
+				await fileList.forEach(async function(file_name) {
+					var file_path = path.join(folder_path ,file_name);
+					command = mrbcConfig.path + ` `;
+					command += path.join(folder_path ,file_name);
+					command += ` ` + mrbcConfig.option;
+					await puts_command(command);
+				});
+				await output_sirial();
+				await new Promise<void>(async resolve => {
+					await setTimeout(resolve, 1000);
+				});
+				await portOpen(writeConfig.serialport);
+				await mrb_write(writeConfig.serialport,folder_path);
+				resolve();
 			});
-			output_sirial();
-			portOpen(writeConfig.serialport);
-			sleep(1000);
-			mrb_write(writeConfig.serialport,folder_path);
 		} else {
 			vscode.window.showInformationMessage(`Too many workspace folders.`);
 		};
