@@ -4,7 +4,7 @@
 	"description": "Compile and write mruby/c.",
 	"version": "0.0.1",
 	"license": "MIT",
-	"publisher": "Yoshihiro Ogura",
+	"publisher": "YoshihiroOgura",
 	"icon": "img/mrubycwrite.png",
 	"repository": {
 		"type": "git",
