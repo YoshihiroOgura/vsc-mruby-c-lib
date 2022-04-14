@@ -1,146 +1,146 @@
 {
-	"name": "mrubycwrite",
-	"displayName": "mruby/c write",
-	"description": "Compile and write mruby/c.",
-	"version": "0.0.1",
-	"license": "MIT",
-	"publisher": "YoshihiroOgura",
-	"icon": "img/mrubycwrite.png",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/YoshihiroOgura/vsc-mruby-c-lib"
-	},
-	"engines": {
-		"vscode": "^1.65.2"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-		"onCommand:extension.write",
-		"onCommand:extension.build",
-		"onCommand:extension.all_build",
-		"onCommand:extension.build_write",
-		"onCommand:extension.serial",
-		"onCommand:extension.close"
-	],
-	"main": "./out/extension.js",
-	"contributes": {
-		"menus": {
-			"editor/title": [
-				{
-					"when": "editorLangId == ruby",
-					"command": "extension.write",
-					"group": "navigation"
-				},
-				{
-					"when": "editorLangId == ruby",
-					"command": "extension.build",
-					"group": "navigation"
-				},
-				{
-					"when": "editorLangId == ruby",
-					"command": "extension.all_build",
-					"group": "navigation"
-				},
-				{
-					"when": "editorLangId == ruby",
-					"command": "extension.build_write",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.serial",
-					"group": "navigation"
-				},
-				{
-					"command": "extension.serialclose",
-					"group": "navigation"
-				}
-			]
-		},
-		"commands": [
-			{
-				"command": "extension.write",
-				"title": "%extension.write.title%",
-				"icon": "$(pencil)"
-			},
-			{
-				"command": "extension.build",
-				"title": "%extension.build.title%",
-				"icon": "$(save)"
-			},
-			{
-				"command": "extension.all_build",
-				"title": "%extension.all_build.title%",
-				"icon": "$(save-all)"
-			},
-			{
-				"command": "extension.build_write",
-				"title": "%extension.build_write.title%",
-				"icon": "$(save-as)"
-			},
-			{
-				"command": "extension.serial",
-				"title": "%extension.serial.title%",
-				"icon": "$(window)"
-			},
-			{
-				"command": "extension.serialclose",
-				"title": "%extension.serialclose.title%",
-				"icon": "$(close)"
-			}
-		],
-		"configuration": {
-			"type": "object",
-			"title": "mrubyc writer",
-			"properties": {
-				"mrubyc.mrbc.path": {
-					"type": "string",
-					"default": "",
-					"description": "%description.mrbc.path%"
-				},
-				"mrubyc.mrbc.option": {
-					"type": "string",
-					"default": "",
-					"description": "%description.mrbc.option%"
-				},
-				"mrubyc.write.option": {
-					"type": "string",
-					"default": "",
-					"description": "%description.mrubycWrite.option%"
-				},
-				"mrubyc.write.serialport": {
-					"type": "string",
-					"default": "",
-					"description": "%description.mrubycWrite.serialport%"
-				}
-			}
-		}
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"lint": "eslint src --ext ts",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/glob": "^7.2.0",
-		"@types/mocha": "^7.0.1",
-		"@types/node": "^17.0.23",
-		"@types/vscode": "^1.65.0",
-		"@typescript-eslint/eslint-plugin": "^2.34.0",
-		"@typescript-eslint/parser": "^2.34.0",
-		"eslint": "^8.12.0",
-		"glob": "^7.2.0",
-		"mocha": "^9.2.2",
-		"typescript": "^3.9.10",
-		"vsce": "^2.7.0",
-		"vscode-test": "^1.6.1"
-	},
-	"dependencies": {
-		"encoding-japanese": "^1.0.30",
-		"serialport": "^10.4.0"
-	}
+  "name": "mrubycwrite",
+  "displayName": "mruby/c write",
+  "description": "Compile and write mruby/c.",
+  "version": "0.0.1",
+  "license": "MIT",
+  "publisher": "YoshihiroOgura",
+  "icon": "img/mrubycwrite.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/YoshihiroOgura/vsc-mruby-c-lib"
+  },
+  "engines": {
+    "vscode": "^1.65.2"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:extension.write",
+    "onCommand:extension.build",
+    "onCommand:extension.all_build",
+    "onCommand:extension.build_write",
+    "onCommand:extension.serial",
+    "onCommand:extension.close"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "menus": {
+      "editor/title": [
+        {
+          "when": "editorLangId == ruby",
+          "command": "extension.write",
+          "group": "navigation"
+        },
+        {
+          "when": "editorLangId == ruby",
+          "command": "extension.build",
+          "group": "navigation"
+        },
+        {
+          "when": "editorLangId == ruby",
+          "command": "extension.all_build",
+          "group": "navigation"
+        },
+        {
+          "when": "editorLangId == ruby",
+          "command": "extension.build_write",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.serial",
+          "group": "navigation"
+        },
+        {
+          "command": "extension.serialclose",
+          "group": "navigation"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "extension.write",
+        "title": "%extension.write.title%",
+        "icon": "$(pencil)"
+      },
+      {
+        "command": "extension.build",
+        "title": "%extension.build.title%",
+        "icon": "$(save)"
+      },
+      {
+        "command": "extension.all_build",
+        "title": "%extension.all_build.title%",
+        "icon": "$(save-all)"
+      },
+      {
+        "command": "extension.build_write",
+        "title": "%extension.build_write.title%",
+        "icon": "$(save-as)"
+      },
+      {
+        "command": "extension.serial",
+        "title": "%extension.serial.title%",
+        "icon": "$(window)"
+      },
+      {
+        "command": "extension.serialclose",
+        "title": "%extension.serialclose.title%",
+        "icon": "$(close)"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "mrubyc writer",
+      "properties": {
+        "mrubyc.mrbc.path": {
+          "type": "string",
+          "default": "",
+          "description": "%description.mrbc.path%"
+        },
+        "mrubyc.mrbc.option": {
+          "type": "string",
+          "default": "",
+          "description": "%description.mrbc.option%"
+        },
+        "mrubyc.write.option": {
+          "type": "string",
+          "default": "",
+          "description": "%description.mrubycWrite.option%"
+        },
+        "mrubyc.write.serialport": {
+          "type": "string",
+          "default": "",
+          "description": "%description.mrubycWrite.serialport%"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint src --ext ts",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^7.0.1",
+    "@types/node": "^17.0.23",
+    "@types/vscode": "^1.65.0",
+    "@typescript-eslint/eslint-plugin": "^2.34.0",
+    "@typescript-eslint/parser": "^2.34.0",
+    "eslint": "^8.12.0",
+    "glob": "^7.2.0",
+    "mocha": "^9.2.2",
+    "typescript": "^3.9.10",
+    "vsce": "^2.7.0",
+    "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "encoding-japanese": "^1.0.30",
+    "serialport": "^10.4.0"
+  }
 }
