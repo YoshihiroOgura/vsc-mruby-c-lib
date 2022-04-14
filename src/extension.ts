@@ -10,14 +10,14 @@ require('events').EventEmitter.defaultMaxListeners = 30;
 
 const window = vscode.window;
 var terminal:any = null; 
-var sirial_window:any = null;
+var serialWindow:any = null;
 var port:any = SerialPort;
 var buffer: string[] = [];
 var lastFlushTime = Number.NEGATIVE_INFINITY;
-var set_datap = false;
+var setDatap = false;
 var txt ="";
 
-function puts_command(command:string) {
+function putsCommand(command:string) {
   if (terminal === null) {
     terminal = window.createTerminal('mrubyc');
     terminal.sendText('# mruby/c terminal', true);
@@ -26,24 +26,24 @@ function puts_command(command:string) {
   terminal.sendText(command);
 };
 
-function output_sirial() {
-  if (sirial_window === null) {
-    sirial_window = window.createOutputChannel("mrubyc serial");
-    sirial_window.appendLine('mruby/c serial output');
+function outputSerial() {
+  if (serialWindow === null) {
+    serialWindow = window.createOutputChannel("mrubyc serial");
+    serialWindow.appendLine('mruby/c serial output');
   };
 };
 
-function puts_log(text:string) {
-  sirial_window.show();
-  sirial_window.appendLine(text);
+function putsLog(text:string) {
+  serialWindow.show();
+  serialWindow.appendLine(text);
 };
 
-function search_extension_files(folder_path:string, extension:string) {
-  var file_list = fs.readdirSync(folder_path);
-  file_list = file_list.filter(function(file) {
+function searchExtensionFiles(folderPath:string, extension:string) {
+  var fileList = fs.readdirSync(folderPath);
+  fileList = fileList.filter(function(file) {
     return path.extname(file).toLowerCase() === extension;
   });
-  return file_list;
+  return fileList;
 };
 
 function tryFlush() {
@@ -52,8 +52,8 @@ function tryFlush() {
   if (txt.length > 0 && currentTime - lastFlushTime > 100) {
     var cat:number =txt.lastIndexOf(`\n`);
     if (cat !== -1) {
-      //sirial_window.appendLine(txt);
-      sirial_window.append(txt.slice(0, cat));
+      //serialWindow.appendLine(txt);
+      serialWindow.append(txt.slice(0, cat));
       txt = txt.slice(cat - txt.length);
     };
   };
@@ -61,28 +61,28 @@ function tryFlush() {
   lastFlushTime = currentTime;
 };
 
-async function portOpen(port_path:string) {
+async function portOpen(portPath:string) {
   if (!port.isOpen) {
     await new Promise<void>((resolve, reject) => {
       port = new SerialPort.SerialPort( {
         autoOpen: true,
-        path: port_path,
+        path: portPath,
         baudRate: 19200
       },(err) => {
         if (err) {
-          puts_log(err.message); 
+          putsLog(err.message); 
           reject(err);
         };
       });
       port.open((err:Error) => {
         if (err) {
-          puts_log(err.message);
+          putsLog(err.message);
           reject(err);
         };
       });
       port.pipe(new ReadlineParser( {delimiter: '\n'}));
       port.flush();
-      set_datap = true;
+      setDatap = true;
       port.on("data", (data:string) => {
         buffer.push(data);
         // txt = data;
@@ -93,13 +93,13 @@ async function portOpen(port_path:string) {
   };
 };
 
-async function mrb_write(port_path:string, folder_path:string) {
-  var fileList = search_extension_files(folder_path, ".mrb");
+async function mrbWrite(portPath:string, folderPath:string) {
+  var fileList = searchExtensionFiles(folderPath, ".mrb");
   var datas:Buffer = new Buffer(0);
   await Promise.all(
-    fileList.map(async file_name => {
-      var file_path = path.join(folder_path, file_name);
-      datas = fs.readFileSync(file_path);
+    fileList.map(async fileName => {
+      var filePath = path.join(folderPath, fileName);
+      datas = fs.readFileSync(filePath);
       return datas;
     })
   );
@@ -110,7 +110,7 @@ async function mrb_write(port_path:string, folder_path:string) {
       await new Promise<void>(async resolve => {
         await port.write("\n");
         await port.drain();
-        await puts_log(".");
+        await putsLog(".");
         await setTimeout(resolve, 1000);
       });
       var moji = port.read(13);
@@ -121,7 +121,7 @@ async function mrb_write(port_path:string, folder_path:string) {
       };
     };
     await port.flush();
-    puts_log("send write command");
+    putsLog("send write command");
     port.write(`write ${datas.length}\n`);
     for (var i=0; i<30; i++) {
       await new Promise<void>(async resolve => {
@@ -131,13 +131,13 @@ async function mrb_write(port_path:string, folder_path:string) {
       if (moji !== null) {
         if (moji.indexOf('+') != -1) {
           await port.flush();
-          puts_log("write datas");
+          putsLog("write datas");
           break;
         };
       };
     };
     port.write(datas);
-    puts_log("execute");
+    putsLog("execute");
     port.write("execute\n");
     await port.flush();
     port.resume();
@@ -148,7 +148,7 @@ async function mrb_write(port_path:string, folder_path:string) {
 async function sleep(time:number) {
   return await new Promise<void>(resolve => {
       setTimeout(() => {
-        puts_log("timeout");
+        putsLog("timeout");
         resolve();
       }, time);
   });
@@ -157,18 +157,18 @@ async function sleep(time:number) {
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
     const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
-    output_sirial();
+    outputSerial();
     portOpen(writeConfig.serialport);
   }));
 
   context.subscriptions.push(vscode.commands.registerCommand('extension.serialclose', () => {
-    if (port.isOpen && set_datap) {
-      set_datap = false;
+    if (port.isOpen && setDatap) {
+      setDatap = false;
       port.off("data", (data:string) => {
         buffer.push(data);
         tryFlush();
       });
-      puts_log('Serial Port ' + port.path + ' is close.');
+      putsLog('Serial Port ' + port.path + ' is close.');
       port.close();
     };
   }));
@@ -176,13 +176,13 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand('extension.write', () => {
     const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
     const folders = vscode.workspace.workspaceFolders;
-    output_sirial();
+    outputSerial();
     portOpen(writeConfig.serialport);
     if (folders === undefined) {
       vscode.window.showInformationMessage(`Too many workspace folders.`);
     } else if (folders.length === 1) {
-      const folder_path = (folders[0]).uri.fsPath;
-      mrb_write(writeConfig.serialport,folder_path);
+      const folderPath = (folders[0]).uri.fsPath;
+      mrbWrite(writeConfig.serialport,folderPath);
     } else {
       vscode.window.showInformationMessage(`Too many workspace folders.`);
     };
@@ -192,9 +192,9 @@ export function activate(context: vscode.ExtensionContext) {
     const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
     const activeEditor = window.activeTextEditor;
     if (activeEditor) {
-      const d_uri = activeEditor.document.uri.fsPath;
-      var command = mrbcConfig.path + ` ` + d_uri + ` ` + mrbcConfig.option;
-      puts_command(command);
+      const documentUri = activeEditor.document.uri.fsPath;
+      var command = mrbcConfig.path + ` ` + documentUri + ` ` + mrbcConfig.option;
+      putsCommand(command);
     };
   }));
 
@@ -204,13 +204,13 @@ export function activate(context: vscode.ExtensionContext) {
     if (folders === undefined) {
       vscode.window.showInformationMessage(`Too many workspace folders.`);
     } else if (folders.length === 1) {
-      const folder_path = (folders[0]).uri.fsPath;
-      var fileList = search_extension_files(folder_path, ".rb");
-      fileList.forEach(function(file_name) {
+      const folderPath = (folders[0]).uri.fsPath;
+      var fileList = searchExtensionFiles(folderPath, ".rb");
+      fileList.forEach(function(fileName) {
         var command = mrbcConfig.path + ` `;
-        command += path.join(folder_path, file_name);
+        command += path.join(folderPath, fileName);
         command += ` ` + mrbcConfig.option;
-        puts_command(command);
+        putsCommand(command);
       });
     } else {
       vscode.window.showInformationMessage(`Too many workspace folders.`);
@@ -225,22 +225,22 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage(`Too many workspace folders.`);
     } else if (folders.length === 1) {
       new Promise<void>(async resolve => {
-        const folder_path = (folders[0]).uri.fsPath;
-        var fileList = search_extension_files(folder_path, ".rb");
+        const folderPath = (folders[0]).uri.fsPath;
+        var fileList = searchExtensionFiles(folderPath, ".rb");
         var command = "";
-        await fileList.forEach(async function(file_name) {
-          var file_path = path.join(folder_path ,file_name);
+        await fileList.forEach(async function(fileName) {
+          var filePath = path.join(folderPath ,fileName);
           command = mrbcConfig.path + ` `;
-          command += path.join(folder_path ,file_name);
+          command += path.join(folderPath ,fileName);
           command += ` ` + mrbcConfig.option;
-          await puts_command(command);
+          await putsCommand(command);
         });
-        await output_sirial();
+        await outputSerial();
         await new Promise<void>(async resolve => {
           await setTimeout(resolve, 1000);
         });
         await portOpen(writeConfig.serialport);
-        await mrb_write(writeConfig.serialport,folder_path);
+        await mrbWrite(writeConfig.serialport,folderPath);
         resolve();
       });
     } else {
