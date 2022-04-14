@@ -34,3 +34,5 @@ icon overview
 # License
 
 This extension is licensed under the MIT License.
+
+A [list](ThirdPartyLib.md) of licenses for the using librarys.
