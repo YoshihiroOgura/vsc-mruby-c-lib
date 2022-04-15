@@ -149,15 +149,6 @@ async function mrbWrite(portPath:string, folderPath:string) {
   });
 };
 
-async function sleep(time:number) {
-  return await new Promise<void>(resolve => {
-      setTimeout(() => {
-        putsLog("timeout");
-        resolve();
-      }, time);
-  });
-};
-
 export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
     const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
