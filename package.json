@@ -104,10 +104,10 @@
           "default": "",
           "description": "%description.mrbc.option%"
         },
-        "mrubyc.write.option": {
-          "type": "string",
-          "default": "",
-          "description": "%description.mrubycWrite.option%"
+        "mrubyc.write.baud": {
+          "type": "number",
+          "default": 19200,
+          "description": "%description.mrubycWrite.baud%"
         },
         "mrubyc.write.serialport": {
           "type": "string",

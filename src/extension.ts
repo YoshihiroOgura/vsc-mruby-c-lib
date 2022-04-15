@@ -65,13 +65,13 @@ function tryFlush() {
   lastFlushTime = currentTime;
 };
 
-async function portOpen(portPath:string) {
+async function portOpen(portPath:string, baud:number) {
   if (!port.isOpen) {
     await new Promise<void>((resolve, reject) => {
       port = new SerialPort.SerialPort( {
         autoOpen: true,
         path: portPath,
-        baudRate: 19200
+        baudRate: baud
       },(err) => {
         if (err) {
           putsLog(err.message); 
@@ -153,7 +153,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand('extension.serial', () => {
     const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
     outputSerial();
-    portOpen(writeConfig.serialport);
+    portOpen(writeConfig.serialport, writeConfig.baud);
   }));
 
   context.subscriptions.push(vscode.commands.registerCommand('extension.serialclose', () => {
@@ -172,7 +172,7 @@ export function activate(context: vscode.ExtensionContext) {
     const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
     const folders = vscode.workspace.workspaceFolders;
     outputSerial();
-    portOpen(writeConfig.serialport);
+    portOpen(writeConfig.serialport, writeConfig.baud);
     if (folders === undefined) {
       window.showInformationMessage(`Too many workspace folders.`);
     } else if (folders.length === 1) {
@@ -234,7 +234,7 @@ export function activate(context: vscode.ExtensionContext) {
         await new Promise<void>(async resolve => {
           await setTimeout(resolve, 1000);
         });
-        await portOpen(writeConfig.serialport);
+        await portOpen(writeConfig.serialport, writeConfig.baud);
         await mrbWrite(writeConfig.serialport,folderPath);
         resolve();
       });

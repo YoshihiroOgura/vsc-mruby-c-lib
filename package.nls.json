@@ -7,6 +7,6 @@
   "extension.serialclose.title":"serial output close",
   "description.mrbc.path": "Path to mruby compiler",
   "description.mrbc.option": "mruby compiler options",
-  "description.mrubycWrite.option": "mrubyc write options",
+  "description.mrubycWrite.baud": "serial baudrate(RBoard:19200)",
   "description.mrubycWrite.serialport": "serial port"
 }
