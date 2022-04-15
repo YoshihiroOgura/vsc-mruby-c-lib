@@ -18,7 +18,7 @@ var setDatap = false;
 var txt ="";
 
 function putsCommand(command:string) {
-  if (terminal === null) {
+  if (terminal === null || terminal.exitStatus !== undefined) {
     terminal = window.createTerminal('mrubyc');
     terminal.sendText('# mruby/c terminal', true);
   };
