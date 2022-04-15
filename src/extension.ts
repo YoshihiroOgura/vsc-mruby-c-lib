@@ -20,7 +20,11 @@ var txt ="";
 function putsCommand(command:string) {
   if (terminal === null || terminal.exitStatus !== undefined) {
     terminal = window.createTerminal('mrubyc');
-    terminal.sendText('# mruby/c terminal', true);
+    if (process.platform == `win32`){
+      terminal.sendText('REM mruby/c terminal', true);
+    } else {
+      terminal.sendText('# mruby/c terminal', true);
+    };
   };
   terminal.show();
   terminal.sendText(command);
