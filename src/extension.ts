@@ -179,12 +179,12 @@ export function activate(context: vscode.ExtensionContext) {
     outputSerial();
     portOpen(writeConfig.serialport);
     if (folders === undefined) {
-      vscode.window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`Too many workspace folders.`);
     } else if (folders.length === 1) {
       const folderPath = (folders[0]).uri.fsPath;
       mrbWrite(writeConfig.serialport,folderPath);
     } else {
-      vscode.window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`Too many workspace folders.`);
     };
   }));
 
@@ -202,7 +202,7 @@ export function activate(context: vscode.ExtensionContext) {
     const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
     const folders = vscode.workspace.workspaceFolders;
     if (folders === undefined) {
-      vscode.window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`Too many workspace folders.`);
     } else if (folders.length === 1) {
       const folderPath = (folders[0]).uri.fsPath;
       var fileList = searchExtensionFiles(folderPath, ".rb");
@@ -213,7 +213,7 @@ export function activate(context: vscode.ExtensionContext) {
         putsCommand(command);
       });
     } else {
-      vscode.window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`Too many workspace folders.`);
     };
   }));
 
@@ -222,7 +222,7 @@ export function activate(context: vscode.ExtensionContext) {
     const writeConfig = vscode.workspace.getConfiguration('mrubyc.write');
     const folders = vscode.workspace.workspaceFolders;
     if (folders === undefined) {
-      vscode.window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`Too many workspace folders.`);
     } else if (folders.length === 1) {
       new Promise<void>(async resolve => {
         const folderPath = (folders[0]).uri.fsPath;
@@ -244,7 +244,7 @@ export function activate(context: vscode.ExtensionContext) {
         resolve();
       });
     } else {
-      vscode.window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`Too many workspace folders.`);
     };
   }));
 };
