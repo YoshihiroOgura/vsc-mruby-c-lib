@@ -99,7 +99,7 @@ async function portOpen(portPath:string, baud:number) {
 
 async function mrbWrite(portPath:string, folderPath:string) {
   var fileList = searchExtensionFiles(folderPath, ".mrb");
-  var datas:Buffer = new Buffer(0);
+  var datas:Buffer = Buffer.alloc(0); // 修正: Buffer.alloc() を使用
   await Promise.all(
     fileList.map(async fileName => {
       var filePath = path.join(folderPath, fileName);
@@ -111,11 +111,13 @@ async function mrbWrite(portPath:string, folderPath:string) {
   port.pause();
   await new Promise<void>(async resolve => {
     for (var i=0; i<15; i++) {
-      await new Promise<void>(async resolve => {
-        await port.write("\n");
-        await port.drain();
-        await putsLog(".");
-        await setTimeout(resolve, 1000);
+      await new Promise<void>(resolve => {
+        port.write("\n", () => {
+          port.drain(() => {
+            putsLog(".");
+            setTimeout(resolve, 1000);
+          });
+        });
       });
       var moji = port.read(13);
       if (moji !== null) {
@@ -125,10 +127,16 @@ async function mrbWrite(portPath:string, folderPath:string) {
       };
     };
     await port.flush();
+    putsLog("send cliar command");
+    port.write("clear\n");
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 100);
+    });
+    await port.flush();
     putsLog("send write command");
     port.write(`write ${datas.length}\n`);
     for (var i=0; i<30; i++) {
-      await new Promise<void>(async resolve => {
+      await new Promise<void>(resolve => {
         setTimeout(resolve, 100);
       });
       var moji = port.read(20);
