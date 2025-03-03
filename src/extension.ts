@@ -65,6 +65,29 @@ function tryFlush() {
   lastFlushTime = currentTime;
 };
 
+function sleep(ms:number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+async function messageCheck() {
+  let i = 0;
+  for (i; i < 30; i++) {
+    await sleep(100);
+    const message = port.read(20);
+    if (message !== null) {
+      if (message.includes('+OK')) {
+        await port.flush();
+        putsLog("command OK");
+        break;
+      }
+    }
+  }
+  if (i === 30) {
+    putsLog("command NG");
+  }
+  await port.flush();
+}
+
 async function portOpen(portPath:string, baud:number) {
   if (!port.isOpen) {
     await new Promise<void>((resolve, reject) => {
@@ -127,27 +150,14 @@ async function mrbWrite(portPath:string, folderPath:string) {
       };
     };
     await port.flush();
+
     putsLog("send cliar command");
     port.write("clear\n");
-    await new Promise<void>(resolve => {
-      setTimeout(resolve, 100);
-    });
-    await port.flush();
+    await messageCheck();
+
     putsLog("send write command");
     port.write(`write ${datas.length}\n`);
-    for (var i=0; i<30; i++) {
-      await new Promise<void>(resolve => {
-        setTimeout(resolve, 100);
-      });
-      var moji = port.read(20);
-      if (moji !== null) {
-        if (moji.indexOf('+') != -1) {
-          await port.flush();
-          putsLog("write datas");
-          break;
-        };
-      };
-    };
+    await messageCheck();
     port.write(datas);
     putsLog("execute");
     port.write("execute\n");
