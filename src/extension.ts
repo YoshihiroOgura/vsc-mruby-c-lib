@@ -54,9 +54,8 @@ function tryFlush() {
   const currentTime = performance.now();
   txt += buffer.join("");
   if (txt.length > 0 && currentTime - lastFlushTime > 100) {
-    var cat:number =txt.lastIndexOf(`\n`);
+    var cat:number = txt.lastIndexOf(`\n`);
     if (cat !== -1) {
-      //serialWindow.appendLine(txt);
       serialWindow.append(txt.slice(0, cat));
       txt = txt.slice(cat - txt.length);
     };
@@ -112,7 +111,6 @@ async function portOpen(portPath:string, baud:number) {
       setDatap = true;
       port.on("data", (data:string) => {
         buffer.push(data);
-        // txt = data;
         tryFlush();
       });
       resolve();
@@ -144,7 +142,7 @@ async function mrbWrite(portPath:string, folderPath:string) {
       });
       var moji = port.read(13);
       if (moji !== null) {
-        if (moji.indexOf('\n') != -1) {break;};
+        if (moji.includes('\n')) {break;};
       } else {
         port.open();
       };
@@ -249,9 +247,7 @@ export function activate(context: vscode.ExtensionContext) {
           await putsCommand(command);
         });
         await outputSerial();
-        await new Promise<void>(async resolve => {
-          await setTimeout(resolve, 1000);
-        });
+        await sleep(1000);
         await portOpen(writeConfig.serialport, writeConfig.baud);
         await mrbWrite(writeConfig.serialport,folderPath);
         resolve();
