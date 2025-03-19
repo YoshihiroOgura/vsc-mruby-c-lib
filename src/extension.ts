@@ -54,9 +54,8 @@ function tryFlush() {
   const currentTime = performance.now();
   txt += buffer.join("");
   if (txt.length > 0 && currentTime - lastFlushTime > 100) {
-    var cat:number =txt.lastIndexOf(`\n`);
+    var cat:number = txt.lastIndexOf(`\n`);
     if (cat !== -1) {
-      //serialWindow.appendLine(txt);
       serialWindow.append(txt.slice(0, cat));
       txt = txt.slice(cat - txt.length);
     };
@@ -64,6 +63,31 @@ function tryFlush() {
   buffer = [];
   lastFlushTime = currentTime;
 };
+
+function sleep(ms:number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+async function messageCheck(checkTxt:string = "+") {
+  let i = 0;
+  var message =  "";
+  for (i; i < 300; i++) {
+    await sleep(10);
+    message += port.read(1);
+    if (message.includes("\n")) {
+      if (message.includes(checkTxt)) {
+        await port.flush();
+        putsLog("command OK");
+        break;
+      }
+    }
+  }
+  
+  if (i === 300) {
+    putsLog("over time");
+  }
+  await port.flush();
+}
 
 async function portOpen(portPath:string, baud:number) {
   if (!port.isOpen) {
@@ -89,7 +113,6 @@ async function portOpen(portPath:string, baud:number) {
       setDatap = true;
       port.on("data", (data:string) => {
         buffer.push(data);
-        // txt = data;
         tryFlush();
       });
       resolve();
@@ -100,61 +123,48 @@ async function portOpen(portPath:string, baud:number) {
 async function mrbWrite(portPath:string, folderPath:string) {
   var fileList = searchExtensionFiles(folderPath, ".mrb");
   var datas:Buffer = Buffer.alloc(0); // 修正: Buffer.alloc() を使用
-  await Promise.all(
-    fileList.map(async fileName => {
-      var filePath = path.join(folderPath, fileName);
-      datas = fs.readFileSync(filePath);
-      return datas;
-    })
-  );
+  
   port.flush();
   port.pause();
-  await new Promise<void>(async resolve => {
-    for (var i=0; i<15; i++) {
-      await new Promise<void>(resolve => {
-        port.write("\n", () => {
-          port.drain(() => {
-            putsLog(".");
-            setTimeout(resolve, 1000);
-          });
+
+  for (var i=0; i<15; i++) {
+    await new Promise<void>(resolve => {
+      port.write("\n", () => {
+        port.drain(() => {
+          putsLog(".");
+          setTimeout(resolve, 1000);
         });
       });
-      var moji = port.read(13);
-      if (moji !== null) {
-        if (moji.indexOf('\n') != -1) {break;};
-      } else {
-        port.open();
-      };
-    };
-    await port.flush();
-    putsLog("send cliar command");
-    port.write("clear\n");
-    await new Promise<void>(resolve => {
-      setTimeout(resolve, 100);
     });
-    await port.flush();
-    putsLog("send write command");
-    port.write(`write ${datas.length}\n`);
-    for (var i=0; i<30; i++) {
-      await new Promise<void>(resolve => {
-        setTimeout(resolve, 100);
-      });
-      var moji = port.read(20);
-      if (moji !== null) {
-        if (moji.indexOf('+') != -1) {
-          await port.flush();
-          putsLog("write datas");
-          break;
-        };
-      };
+    var moji = port.read(5);
+    if (moji !== null) {
+      if (moji.includes('\n')) {break;};
+    } else {
+      port.open();
     };
+  };
+  await port.flush();
+
+  
+  putsLog("send cliar command");
+  port.write("clear\n");
+  await messageCheck("+OK");
+
+  for (let i = 0; i < fileList.length; i++) {
+    var filePath = path.join(folderPath, fileList[i]);
+    datas = fs.readFileSync(filePath);
+    putsLog(`write ${fileList[i]}`);
+    port.write(`write ${datas.length}\n`);
+    await messageCheck("+OK");
     port.write(datas);
-    putsLog("execute");
-    port.write("execute\n");
-    await port.flush();
-    port.resume();
-    resolve();
-  });
+    await messageCheck("+DONE");
+  }
+
+  putsLog("execute");
+  port.write("execute\n");
+  await messageCheck("+OK");
+  await port.flush();
+  port.resume();
 };
 
 export function activate(context: vscode.ExtensionContext) {
@@ -182,7 +192,7 @@ export function activate(context: vscode.ExtensionContext) {
     outputSerial();
     portOpen(writeConfig.serialport, writeConfig.baud);
     if (folders === undefined) {
-      window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`No workspace folders found.`);
     } else if (folders.length === 1) {
       const folderPath = (folders[0]).uri.fsPath;
       mrbWrite(writeConfig.serialport,folderPath);
@@ -205,7 +215,7 @@ export function activate(context: vscode.ExtensionContext) {
     const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
     const folders = vscode.workspace.workspaceFolders;
     if (folders === undefined) {
-      window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`No workspace folders found.`);
     } else if (folders.length === 1) {
       const folderPath = (folders[0]).uri.fsPath;
       var fileList = searchExtensionFiles(folderPath, ".rb");
@@ -231,17 +241,14 @@ export function activate(context: vscode.ExtensionContext) {
         const folderPath = (folders[0]).uri.fsPath;
         var fileList = searchExtensionFiles(folderPath, ".rb");
         var command = "";
-        await fileList.forEach(async function(fileName) {
-          var filePath = path.join(folderPath ,fileName);
+        for (const fileName of fileList) {
           command = mrbcConfig.path + ` `;
           command += path.join(folderPath ,fileName);
           command += ` ` + mrbcConfig.option;
           await putsCommand(command);
-        });
-        await outputSerial();
-        await new Promise<void>(async resolve => {
-          await setTimeout(resolve, 1000);
-        });
+        }
+        outputSerial();
+        await sleep(1000);
         await portOpen(writeConfig.serialport, writeConfig.baud);
         await mrbWrite(writeConfig.serialport,folderPath);
         resolve();
