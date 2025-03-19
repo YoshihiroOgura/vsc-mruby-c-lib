@@ -136,7 +136,7 @@ async function mrbWrite(portPath:string, folderPath:string) {
         });
       });
     });
-    var moji = port.read(13);
+    var moji = port.read(5);
     if (moji !== null) {
       if (moji.includes('\n')) {break;};
     } else {
@@ -192,7 +192,7 @@ export function activate(context: vscode.ExtensionContext) {
     outputSerial();
     portOpen(writeConfig.serialport, writeConfig.baud);
     if (folders === undefined) {
-      window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`No workspace folders found.`);
     } else if (folders.length === 1) {
       const folderPath = (folders[0]).uri.fsPath;
       mrbWrite(writeConfig.serialport,folderPath);
@@ -215,7 +215,7 @@ export function activate(context: vscode.ExtensionContext) {
     const mrbcConfig = vscode.workspace.getConfiguration('mrubyc.mrbc');
     const folders = vscode.workspace.workspaceFolders;
     if (folders === undefined) {
-      window.showInformationMessage(`Too many workspace folders.`);
+      window.showInformationMessage(`No workspace folders found.`);
     } else if (folders.length === 1) {
       const folderPath = (folders[0]).uri.fsPath;
       var fileList = searchExtensionFiles(folderPath, ".rb");
@@ -241,14 +241,13 @@ export function activate(context: vscode.ExtensionContext) {
         const folderPath = (folders[0]).uri.fsPath;
         var fileList = searchExtensionFiles(folderPath, ".rb");
         var command = "";
-        await fileList.forEach(async function(fileName) {
-          var filePath = path.join(folderPath ,fileName);
+        for (const fileName of fileList) {
           command = mrbcConfig.path + ` `;
           command += path.join(folderPath ,fileName);
           command += ` ` + mrbcConfig.option;
           await putsCommand(command);
-        });
-        await outputSerial();
+        }
+        outputSerial();
         await sleep(1000);
         await portOpen(writeConfig.serialport, writeConfig.baud);
         await mrbWrite(writeConfig.serialport,folderPath);
